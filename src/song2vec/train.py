@@ -6,6 +6,8 @@ that co-occur in playlists end up with nearby vectors.
 Run:  python -m song2vec.train
 """
 
+import logging
+
 from gensim.models import Word2Vec
 from gensim.models.word2vec import LineSentence
 
@@ -15,9 +17,12 @@ from . import config
 def main() -> None:
     if not config.PLAYLISTS_FILE.exists():
         raise SystemExit(
-            f"Missing {config.PLAYLISTS_FILE}. Run `python -m song2vec.parse` first."
+            f"Missing {config.PLAYLISTS_FILE}. Run ingest (or parse) first."
         )
 
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO
+    )
     print("Training Word2Vec on playlists ...")
     model = Word2Vec(
         sentences=LineSentence(str(config.PLAYLISTS_FILE)),

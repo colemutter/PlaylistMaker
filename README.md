@@ -30,12 +30,20 @@ uv pip install -e .
 
 ## Pipeline
 
-```bash
-# 1. Get the data (needs a free AIcrowd account — see the link above)
-python -m song2vec.download_mpd /path/to/spotify_million_playlist_dataset.zip
+The official AIcrowd/Spotify download is closed (you must email Spotify Research).
+This project instead ingests the **Zenodo mirror** — a MySQL dump of the same 1M
+playlists ([record 5002584](https://zenodo.org/records/5002584), 10.7 GB).
 
-# 2. Build the training corpus + track metadata
-python -m song2vec.parse
+```bash
+# 1. Download the dump (resumable)
+curl -L -C - "https://zenodo.org/records/5002584/files/spotifydbdumpshare.sql?download=1" \
+     -o data/raw/spotifydbdump.sql
+# optional integrity check — expected MD5: 3549b42e207a76ba5c20e650f1cd044e
+md5 data/raw/spotifydbdump.sql
+
+# 2. Ingest the dump -> local SQLite -> playlists.txt + track_meta.json
+#    (streams the dump; no MySQL server needed)
+python -m song2vec.ingest
 
 # 3. Train the embeddings
 python -m song2vec.train
@@ -44,6 +52,15 @@ python -m song2vec.train
 python -m song2vec.generate "spotify:track:..." -n 20
 python -m song2vec.generate "Mr. Brightside" -n 20   # local name search
 ```
+
+<details>
+<summary>Alternative: raw JSON slices (if you obtain the original MPD)</summary>
+
+```bash
+python -m song2vec.download_mpd /path/to/spotify_million_playlist_dataset.zip
+python -m song2vec.parse        # JSON slices -> playlists.txt + track_meta.json
+```
+</details>
 
 ## Spotify API (for the app layer)
 
@@ -61,8 +78,9 @@ See [`src/song2vec/spotify.py`](src/song2vec/spotify.py) for `search_track()` an
 ```
 src/song2vec/
   config.py        paths + Word2Vec hyperparameters
-  download_mpd.py  extract MPD slices into data/raw/
-  parse.py         MPD slices -> playlists.txt + track_meta.json
+  ingest.py        Zenodo SQL dump -> SQLite -> playlists.txt + track_meta.json
+  download_mpd.py  extract MPD JSON slices into data/raw/ (alternative path)
+  parse.py         MPD JSON slices -> playlists.txt + track_meta.json (alternative path)
   train.py         playlists.txt -> models/song2vec.model
   generate.py      seed song -> nearest-neighbour playlist
   spotify.py       name resolution + playlist creation (Spotify Web API)
