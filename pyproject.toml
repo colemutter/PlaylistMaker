@@ -1,0 +1,20 @@
+[project]
+name = "song2vec"
+version = "0.1.0"
+description = "word2vec-style song embeddings trained on the Spotify Million Playlist Dataset, with a 'same-feel' playlist generator."
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "gensim>=4.3.3",
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "tqdm>=4.66",
+    "spotipy>=2.24",
+    "python-dotenv>=1.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
