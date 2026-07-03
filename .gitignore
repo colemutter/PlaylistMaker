@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.env
+
+# Data & models (large / regenerable — do not commit)
+data/raw/*
+data/processed/*
+models/*
+!**/.gitkeep
+
+# Spotify OAuth token cache
+.cache
+
+.DS_Store
