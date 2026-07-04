@@ -1,0 +1,24 @@
+# Fly.io config. `fly launch` will set `app`/`primary_region` for you, or edit them.
+app = "playlistmaker"          # must be globally unique — change to your own
+primary_region = "sea"         # pick one near you: sea, sjc, ord, iad, lhr, ...
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_start_machines = true
+  auto_stop_machines = false   # stay warm — no cold-start model reloads
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    method = "get"
+    path = "/api/health"
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "60s"       # allow time to load the model on boot
+
+[[vm]]
+  memory = "2gb"               # ~1.1 GB used; 2 GB gives headroom
+  cpu_kind = "shared"
+  cpus = 1

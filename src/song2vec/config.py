@@ -17,6 +17,11 @@ MODEL_FILE = MODELS_DIR / "song2vec.model"
 DUMP_FILE = RAW_DIR / "spotifydbdump.sql"             # raw MySQL dump from the Zenodo mirror
 SQLITE_FILE = PROCESSED_DIR / "mpd.sqlite"            # local scratch DB built from the dump
 
+# Deployment artifacts — a slimmed model + metadata for hosting (see export.py).
+KV_FILE = MODELS_DIR / "song2vec.kv"                  # pruned KeyedVectors (no syn1neg), for serving
+PRUNED_META_FILE = PROCESSED_DIR / "meta.min.json"    # metadata limited to the pruned vocab
+EXPORT_TOP_N = 500_000                                 # keep the N most-played tracks
+
 # Word2Vec hyperparameters (tune later)
 VECTOR_SIZE = 128   # dimensionality of each song vector
 WINDOW = 10         # playlist order is weak, so a wide context window works well

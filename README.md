@@ -62,6 +62,32 @@ python -m song2vec.parse        # JSON slices -> playlists.txt + track_meta.json
 ```
 </details>
 
+## Web app
+
+A React/Vite frontend (purple animated sound-wave background) on a FastAPI backend
+that serves same-feel playlists from the trained model.
+
+```bash
+# 1. Backend — loads the model on the first request (port 8008)
+python -m song2vec.server
+
+# 2. Frontend — in another terminal (port 5180)
+cd web
+npm install       # first time only
+npm run dev
+```
+
+Then open **http://localhost:5180**, type a song (optionally an artist to disambiguate),
+pick a length, and hit *Generate*.
+
+- Backend endpoint: `POST /api/generate  {song, artist?, length}` → `{seed, tracks[]}`
+- Seed resolution matches by name within the dataset and picks the **most-played**
+  version (gensim vocab `count`), since the Spotify API's current track URIs differ
+  from the 2017 dataset's. Add an artist to force a specific recording.
+- Ports: backend 8008, frontend 5180 (8000/5173 are often taken by other projects).
+
+Files: [`src/song2vec/server.py`](src/song2vec/server.py), [`web/`](web/).
+
 ## Spotify API (for the app layer)
 
 To resolve real song names and write playlists back to your account, create a Spotify

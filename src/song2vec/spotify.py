@@ -18,14 +18,16 @@ def _client(user_auth: bool = False):
     import spotipy
 
     if user_auth:
-        from spotipy.oauth2 import SpotifyOAuth
+        # Spotify's 2025 security migration requires PKCE for the auth-code flow,
+        # so we use SpotifyPKCE (no client secret in the user-auth exchange).
+        from spotipy.oauth2 import SpotifyPKCE
 
         return spotipy.Spotify(
-            auth_manager=SpotifyOAuth(
+            auth_manager=SpotifyPKCE(
                 client_id=os.environ["SPOTIPY_CLIENT_ID"],
-                client_secret=os.environ["SPOTIPY_CLIENT_SECRET"],
-                redirect_uri=os.environ.get("SPOTIPY_REDIRECT_URI", "http://127.0.0.1:8888/callback"),
+                redirect_uri=os.environ.get("SPOTIPY_REDIRECT_URI", "http://127.0.0.1:8890/callback"),
                 scope="playlist-modify-private playlist-modify-public",
+                open_browser=True,
             )
         )
 
